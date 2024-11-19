@@ -32,14 +32,22 @@ var ground = BABYLON.MeshBuilder.CreateGround(
 
 // Create a black material for the ground
 var groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-groundMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0); // Black color
+groundMaterial.diffuseColor = new BABYLON.Color3(1, 0, 1); // Black color
 ground.material = groundMaterial;
 
 // Enable edge rendering for the ground
 ground.enableEdgesRendering();
 ground.edgesWidth = 5.0; // Set the edge width to 3 units
 ground.edgesColor = new BABYLON.Color4(1, 1, 1, 1); // White color for the edges
+const gridMaterial = new BABYLON.GridMaterial("gridMaterial", scene);
 
+gridMaterial.majorUnitFrequency = 5; // Distance between major lines
+gridMaterial.minorUnitVisibility = 0.5; // Visibility of minor lines (0 to 1)
+gridMaterial.gridRatio = 1; // Scale of the grid
+gridMaterial.backFaceCulling = false; // Ensure visibility from all angles
+gridMaterial.mainColor = new BABYLON.Color3(0, 0, 0); // Background color (black)
+gridMaterial.lineColor = new BABYLON.Color3(1, 1, 1); // Line color (white)
+ground.material = gridMaterial;
 
 
 // Handle pointer events
@@ -61,7 +69,7 @@ function handlePointer(pointerInfo) {
           const markerName = `marker_${Date.now()}`; // Use a unique name for the sphere
           const sphere = BABYLON.MeshBuilder.CreateSphere(
             markerName,
-            { diameter: 0.2 },
+            { diameter: 0.5 },
             scene
           );
           sphere.position = pickInfo.pickedPoint;
@@ -356,6 +364,7 @@ document.getElementById("shapeSelector").addEventListener("click", (event) => {
   if (selectedShape === "sphere") {
     const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 8 }, scene); // Diameter = 2 * radius
     sphere.position.y=4
+    event.target.value="Select"
   } else if (selectedShape === "cube") {
     const cube = BABYLON.MeshBuilder.CreateBox("cube", { size: 8 }, scene); // Size = side length
     cube.position.y=4
