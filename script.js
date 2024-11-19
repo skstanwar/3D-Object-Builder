@@ -5,8 +5,8 @@ var scene = new BABYLON.Scene(engine);
 const gizmoManager = new BABYLON.GizmoManager(scene);
 const camera = new BABYLON.ArcRotateCamera(
   "UniversalCamera",
-  Math.PI / 4, // alpha (rotation around Y-axis)
-  Math.PI / 4, // beta (rotation around X-axis)
+  -Math.PI / 2, // alpha (rotation around Y-axis)
+  Math.PI / 3, // beta (rotation around X-axis)
   60,          // radius (distance from target)
   BABYLON.Vector3.Zero(), // target (look-at point)
   scene
@@ -26,7 +26,7 @@ light.intensity = 0.7;
 // Create the ground
 var ground = BABYLON.MeshBuilder.CreateGround(
   "ground",
-  { width: 80, height: 50 },
+  { width: 500, height: 400 },
   scene
 );
 
@@ -207,11 +207,95 @@ function dragMesh(pointerInfo) {
       break;
   }
 }
+const textTo3D = (
+  text,
+  fontUrl,
+  size,
+  depth,
+  scene,
+  position = { x: 0, y: 0, z: 0 },
+  spacing = 0, // Add spacing between characters
+  color = { diffuse: new BABYLON.Color3(1, 1, 1), emissive: new BABYLON.Color3(0, 0, 0) } // Add more color controls
+) => {
+  opentype.load(fontUrl, (err, font) => {
+      if (err) {
+          console.error("Error loading font:", err);
+          return;
+      }
 
-// Global Variables
-let sphereHandles = [];
+      let xOffset = 0; // Tracks horizontal position for spacing
+      const combinedMesh = new BABYLON.Mesh("textMesh", scene); // To combine all characters
 
-// Function to Highlight Upper Vertices
+      [...text].forEach((char) => {
+          const path = font.getPath(char, 0, 0, size); // Generate a path for the current character
+          const shape = [];
+
+          // Process commands to create a shape for the character
+          path.commands.forEach((cmd) => {
+              if (cmd.type === "M") {
+                  // MoveTo starts a new path
+                  shape.push(new BABYLON.Vector3(cmd.x + xOffset, -cmd.y, 0));
+              } else if (cmd.type === "L") {
+                  // LineTo adds a straight line
+                  shape.push(new BABYLON.Vector3(cmd.x + xOffset, -cmd.y, 0));
+              } else if (cmd.type === "Q") {
+                  // Quadratic Bezier curve approximation
+                  const control = new BABYLON.Vector3(cmd.x1 + xOffset, -cmd.y1, 0);
+                  const end = new BABYLON.Vector3(cmd.x + xOffset, -cmd.y, 0);
+                  shape.push(control, end);
+              } else if (cmd.type === "C") {
+                  // Cubic Bezier curve approximation
+                  const control1 = new BABYLON.Vector3(cmd.x1 + xOffset, -cmd.y1, 0);
+                  const control2 = new BABYLON.Vector3(cmd.x2 + xOffset, -cmd.y2, 0);
+                  const end = new BABYLON.Vector3(cmd.x + xOffset, -cmd.y, 0);
+                  shape.push(control1, control2, end);
+              }
+          });
+
+          // Create a 3D text mesh for the character
+          const charMesh = BABYLON.MeshBuilder.ExtrudeShape(
+              `char_${char}`,
+              {
+                  shape: shape,
+                  path: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, depth)],
+                  cap: BABYLON.Mesh.CAP_ALL,
+              },
+              scene
+          );
+
+          // Apply material
+          const textMaterial = new BABYLON.StandardMaterial(`charMaterial_${char}`, scene);
+          textMaterial.diffuseColor = color.diffuse; // Diffuse color
+          textMaterial.emissiveColor = color.emissive; // Emissive color
+          charMesh.material = textMaterial;
+
+          // Combine with the main mesh and position the character
+          charMesh.position = new BABYLON.Vector3(position.x, position.y, position.z);
+          charMesh.parent = combinedMesh;
+
+          // Update horizontal offset for the next character
+          xOffset += size + spacing;
+      });
+
+      // Set position of the combined mesh
+      combinedMesh.position = new BABYLON.Vector3(position.x, position.y, position.z);
+  });
+};
+// Call textTo3D
+textTo3D(
+  "Hello", // Text to render
+  "./Fonts/HostGrotesk-Italic-VariableFont_wght.ttf", // Font URL
+  15, // Font size
+  4, // Depth
+  scene,
+  { x: -15, y: 0, z: 5 }, // Position
+  0, // Spacing between characters
+  { 
+      diffuse: new BABYLON.Color3(0, 0.5, 1), // Light blue
+      emissive: new BABYLON.Color3(0.2, 0.2, 0.6) // Subtle glow
+  }
+);
+
 // Function to Enter Edit Mode
 function enterEditMode(mesh) {
   const scene = mesh.getScene();
