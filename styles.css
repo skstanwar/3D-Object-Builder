@@ -1,0 +1,54 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+#container{
+    width: 100vw;
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: #000000;
+
+}
+#footer{
+    width: 100vw;
+    z-index: 10;
+    position: absolute;
+    bottom: 0;
+    height: 5vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: #000000;
+
+}
+#container > button{
+    background-color: aquamarine;
+    padding: 0.3%;
+    margin: 0.4%;
+
+}
+#container > select{
+    background-color: aquamarine;
+    padding: 0.3%;
+    margin: 0.4%;
+
+}
+#footer > button{
+    background-color: aquamarine;
+    padding: 0.3%;
+    margin: 0.3%;
+
+}
+#container > button:hover{
+    background-color: rgb(243, 8, 8);
+}
+#renderCanvas{
+    width: 100vw;
+    height: 90vh;
+}

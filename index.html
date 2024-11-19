@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Snaptrude Assignment</title>
+    <script src="./static/babylon.max.js"></script>
+    <script src="./static/babylon.gridMaterial.js"></script>
+    <script src="./static/babylon.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div id="container">
+      <button id="Draw_Shape">Draw Shape</button>
+      <button id="Extrude">Extrude</button>
+      <button id="Move_Shape">Move Shape</button>
+      <!-- <label for="shapeSelector">Edit Vertex: </label> -->
+      <select id="shapeSelector">
+        <option value="Select">Select Shape</option>
+        <option value="sphere">Sphere</option>
+        <option value="cube">Cube</option>
+      </select>
+      
+    </div>
+    <div id="footer">
+      <button id="Gizmos">3D Axis ON/OFF</button>
+      <button id="DeleteMesh">Delete Mesh</button>
+      <button id="fMove_Shape">Copy Original Mesh</button>
+      <button id="fEdit_Vertex">Clone Mesh</button>
+    </div>
+    <canvas id="renderCanvas"></canvas>
+    <script src="script.js"></script>
+  </body>
+</html>
